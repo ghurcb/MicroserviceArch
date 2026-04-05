@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - blog-network
+
+  app:
+    build:
+      context: ./services/backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://app:app@db/app
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key}
+    ports:
+      - "10000:10000"
+    volumes:
+      - ./services/backend/src:/app/src
+      - ./services/backend/alembic:/app/alembic
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - blog-network
+
+volumes:
+  db_data:
+
+networks:
+  blog-network:
+    driver: bridge
+    
