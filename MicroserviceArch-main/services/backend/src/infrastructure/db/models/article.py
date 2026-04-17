@@ -1,16 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy import String, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.infrastructure.db.base import Base
-
-if TYPE_CHECKING:
-    from .user import User
-    from .comment import Comment
-    from .tag import Tag
 
 
 class Article(Base):
@@ -19,8 +12,8 @@ class Article(Base):
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(String(512), nullable=False)
     body: Mapped[str] = mapped_column(Text, nullable=False)
-    author_id: Mapped[int] = mapped_column(ForeignKey("user.id"), index=True, nullable=False)
-    author: Mapped["User"] = relationship(back_populates="articles")
+    author_id: Mapped[int] = mapped_column(index=True, nullable=False)
+    
     comments: Mapped[list["Comment"]] = relationship(back_populates="article", cascade="all, delete-orphan")
     tags: Mapped[list["Tag"]] = relationship(secondary="articletag", back_populates="articles")
 
