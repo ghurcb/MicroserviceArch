@@ -4,29 +4,23 @@ from fastapi import FastAPI
 
 from src.api.v1.articles.router import router as articles_router
 from src.api.v1.comments.router import router as comments_router
-from src.api.v1.users.router import router as users_router
 
 
 def create_app() -> FastAPI:
     app = FastAPI(
-        title="Microservice FastAPI",
+        title="Blog Backend API",
         version="1.0.0",
-        description="Микросервисное приложение: пользователи, статьи, комментарии",
+        description="API для статей и комментариев (без пользователей)",
         docs_url="/docs",
         openapi_url="/openapi.json",
     )
 
-    @app.api_route("/", methods=["GET", "HEAD"])
-    async def root():
-        return {"status": "ok", "service": "backend-api"}
-
     @app.get("/health", tags=["Health"])
-    async def root():
+    async def health_check():
         return {"status": "ok", "service": "backend-api"}
 
     app.include_router(articles_router, prefix="/api")
     app.include_router(comments_router, prefix="/api")
-    app.include_router(users_router, prefix="/api")
 
     return app
 
