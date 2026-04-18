@@ -7,10 +7,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.infrastructure.db.base import Base
 
-if TYPE_CHECKING:
-    from .article import Article
-    from .comment import Comment
-
 class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
@@ -18,5 +14,3 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     bio: Mapped[str | None] = mapped_column(String(512), nullable=True)
     image_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
-    articles: Mapped[list["Article"]] = relationship(back_populates="author")
-    comments: Mapped[list["Comment"]] = relationship(back_populates="author")

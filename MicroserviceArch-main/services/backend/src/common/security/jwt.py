@@ -18,13 +18,3 @@ def _get_algorithm() -> str:
 
 def decode_token(token: str) -> Dict[str, Any]:
     return jwt.decode(token, _get_secret(), algorithms=[_get_algorithm()])
-
-def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=int(os.getenv("JWT_ACCESS_TOKEN_EXPIRES_MIN", 30)))
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, _get_secret(), algorithm=_get_algorithm())
-    return encoded_jwt
